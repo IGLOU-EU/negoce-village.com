@@ -2,17 +2,18 @@
 Afin de ce débarasser de la technologie Microsoft SharePoint et son hebergement extrement onéreux, la Fédération du Negoce Agricole a décidé de migrer son site web vers une technologie plus moderne et ouverte. Dans l'attente de la mise en place du nouveau site webdevant etre mis en ligne d'ici 2024, ce dépôt contient les fichiers du site au format HTML statique.
 
 ## TODO
-- [ ] Migrer les fichiers du site vers le dépôt
+- [x] Migrer les fichiers du site vers le dépôt
 - [ ] Mettre a jour les mentions légales
-- [ ] Retrait du formulaire de contact
-- [ ] Conserver la redirection pour le lien Centre atlantique
+- [x] Retrait du formulaire de contact
+- [x] Conserver la redirection pour le lien Centre atlantique
 - [ ] Remplacer la recherche par mots clé des actualités par un champ recherche spécifique
-- [ ] Remplacement du contenu de la page `annuaire-des-adhérents` par une carte interactive
-- [ ] Remplacer Facebook par LinkedIn
-- [ ] Supprimer les liens Dailymotion
+- [x] Remplacement du contenu de la page `annuaire-des-adhérents` par une carte interactive
+- [x] Remplacer Facebook par LinkedIn
+- [x] Supprimer les liens Dailymotion
 - [ ] Ajout DPO pour la protection des données personnelles
 - [ ] Ajout de la personne en charge de la publication
 - [ ] Ajout des mentions légales de la Féderation du Negoce Agricole
+- [ ] Conserver les actualités sur la page d'accueil
 
 ## Hébergement
 L'hébergement du site dans son format statique est assuré par GitHub Pages.
