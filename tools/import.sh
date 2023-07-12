@@ -34,6 +34,7 @@ else
 fi
 
 # Download the site
+curl "$URL/_layouts/15/1036/initstrings.js?rev=rqljWeAFWwNOW%2FF%2FLwdjXg%3D%3D" > "$PUBLIC/_layouts/15/1036/initstrings.js"
 wget -P "$PUBLIC" --recursive --no-clobber --page-requisites    \
     -nH --html-extension --convert-links --no-parent            \
     --local-encoding=UTF-8 --restrict-file-names=nocontrol      \
