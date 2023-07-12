@@ -1,9 +1,9 @@
 # Migration de negoce-village.com
-Afin de ce débarasser de la technologie Microsoft SharePoint et son hebergement extrement onéreux, la Fédération du Negoce Agricole a décidé de migrer son site web vers une technologie plus moderne et ouverte. Dans l'attente de la mise en place du nouveau site webdevant etre mis en ligne d'ici 2024, ce dépôt contient les fichiers du site au format HTML statique.
+Afin de se débarrasser de la technologie Microsoft SharePoint et son hébergement extrêmement onéreux, la Fédération du Négoce Agricole a décidé de migrer son site web vers une technologie plus moderne et ouverte. Dans l'attente de la mise en place du nouveau site web devant être mis en ligne d'ici à 2024, ce dépôt contient les fichiers du site au format HTML statique.
 
 ## TODO
 - [x] Migrer les fichiers du site vers le dépôt
-- [ ] Mettre a jour les mentions légales
+- [ ] Mettre à jour les mentions légales
 - [x] Retrait du formulaire de contact
 - [x] Conserver la redirection pour le lien Centre atlantique
 - [ ] Remplacer la recherche par mots clé des actualités par un champ recherche spécifique
@@ -12,7 +12,7 @@ Afin de ce débarasser de la technologie Microsoft SharePoint et son hebergement
 - [x] Supprimer les liens Dailymotion
 - [ ] Ajout DPO pour la protection des données personnelles
 - [ ] Ajout de la personne en charge de la publication
-- [ ] Ajout des mentions légales de la Féderation du Negoce Agricole
+- [ ] Ajout des mentions légales de la Fédération du Négoce Agricole
 - [ ] Conserver les actualités sur la page d'accueil
 
 ## Hébergement
@@ -31,7 +31,7 @@ Siret:  800813156
 
 Phone:      +1 (877) 448-4820 
 Email:      privacy@github.com
-Website: 	https://github.com/
+Website:    https://github.com/
 ```
 
 ## Publication
@@ -55,6 +55,6 @@ Website:    https://iglou.eu/
 ```
 ## Import
 L'import est effectué par le biais d'un script shell.   
-Ce script permet de récupérer les fichiers du site actuel et de les convertir en fichiers HTML statique, il corrige aussi les différentes erreur JS et CSS du site d'origine.
+Ce script permet de récupérer les fichiers du site actuel et de les convertir en fichiers HTML statique, il corrige aussi les différentes erreurs JS et CSS du site d'origine.
 
-Les scripts sont disponibles dans le dossier `tools/`et le site est disponible dans le dossier `pub/` du dépôt.
+Les scripts sont disponibles dans le dossier `tools/` et le site est disponible dans le dossier `pub/` du dépôt.
