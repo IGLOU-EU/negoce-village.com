@@ -6,6 +6,7 @@ readonly ROOT="$(dirname "$(dirname "$(readlink -f -- "$0")")")"
 readonly TOOLS="$ROOT/tools"
 readonly PUBLIC="$ROOT/pub"
 
+readonly NEW_DOMAIN="negoce-village.iglou.eu"
 readonly DOMAIN="negoce-village.com"
 readonly URL="http://www.$DOMAIN/"
 
@@ -50,3 +51,10 @@ success "Fixed errors in the downloaded site"
 # while IFS= read -r -d '' file; do
 #     update_site "$file" || fatal "Failed to update the site"
 # done < <(find "$PUBLIC" -type f -name "*.html" -print0)
+
+# Add CNAME file
+if ! echo "$NEW_DOMAIN" > "$PUBLIC/CNAME"; then
+    fatal "Failed to add CNAME file"
+else 
+    success "Added CNAME file"
+fi
