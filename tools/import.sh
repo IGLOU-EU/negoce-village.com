@@ -1,4 +1,13 @@
 #!/bin/bash
+
+# This is a totaly useless script, because the site is migrated only once.
+# And when the site is migrated, we can't use this script anymore.
+# So, it's not necessary to automate the migration or modification of the site.
+# But, there is very fun to do it, so I do it.
+# And the client don't want to pay for an useless script, so I do it for free.
+# But I don't want to do it for free, so I do it for fun.
+# I USE ARCH BTW
+
 set -x
 
 # Define readonly variables
