@@ -12,10 +12,13 @@ fix_error() {
 
     case "$file" in 
         *.html)
-            sed -i -E -e 's/&#39;/\x27/g' -e 's/&#34;/\x22/g' -e 's/&quot;/\x22/g' \
-                "$file" || status=$FAILURE
+            # So much errors in this microsoft sharepoint site... I can't fix it without breaking it...
+            # sed -i -E -e 's/&#39;/\x27/g' -e 's/&#34;/\x22/g' -e 's/&quot;/\x22/g' \
+            #     "$file" || status=$FAILURE
+            # < "$file" recode html..utf8 | sponge "$file" || status=$FAILURE
             # sed -i -E 's/"([^":]+\.(css|js|axd))(%3F|\?)[^"]*"/"\1"/g' \
             #     "$file" || status=$FAILURE
+            # < "$file" perl -MHTML::Entities -CSD -pe 'decode_entities($_)' | sponge "$file" || status=$FAILURE
             ;;
         *.css)
             sed -i -E ':a;N;$!ba;s/,\s*\{/ {/g' "$file" || status=$FAILURE
