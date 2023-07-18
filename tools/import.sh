@@ -19,6 +19,9 @@ readonly NEW_DOMAIN="negoce-village.iglou.eu"
 readonly DOMAIN="negoce-village.com"
 readonly URL="http://www.$DOMAIN/"
 
+readonly CSS_FNA_MOBILE_I="/_layouts/15/FNA.Internet/CSS/FNA_Mobile.css"
+readonly CSS_FNA_MOBILE_II="/_layouts/15/FNA.Internet/CSS/rhinoslider.css"
+
 # Import utils.sh
 source "$TOOLS/utils.sh"
 source "$TOOLS/editor.sh"
@@ -34,7 +37,6 @@ else
 fi
 
 # Download the site
-curl "$URL/_layouts/15/1036/initstrings.js?rev=rqljWeAFWwNOW%2FF%2FLwdjXg%3D%3D" > "$PUBLIC/_layouts/15/1036/initstrings.js"
 wget -P "$PUBLIC" --recursive --no-clobber --page-requisites    \
     -nH --html-extension --convert-links --no-parent            \
     --local-encoding=UTF-8 --restrict-file-names=nocontrol      \
@@ -45,6 +47,10 @@ if [[ $result -ne 0 ]]; then
     warning "The scrapping of the site return a code '$result'"
     warning "See https://curl.se/libcurl/c/libcurl-errors.html for more details"
 fi
+
+curl "$URL/_layouts/15/FNA.Internet/CSS/FNA_Mobile.css" > "$PUBLIC$CSS_FNA_MOBILE_I" || fatal "Failed to download css FNA_Mobile.css"
+curl "$URL/_layouts/15/FNA.Internet/CSS/rhinoslider.css" > "$PUBLIC$CSS_FNA_MOBILE_II" || fatal "Failed to download css rhinoslider.css"
+curl "$URL/_layouts/15/1036/initstrings.js?rev=rqljWeAFWwNOW%2FF%2FLwdjXg%3D%3D" > "$PUBLIC/_layouts/15/1036/initstrings.js"
 
 # Fix errors in the downloaded site
 while IFS= read -r -d '' file; do
