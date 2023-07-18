@@ -24,7 +24,7 @@ source "$TOOLS/utils.sh"
 source "$TOOLS/editor.sh"
 
 # Check requirements
-check_requirements "command" "echo" "wget" "sponge" "htmlq"
+check_requirements "command" "echo" "curl" "wget" "sponge" "htmlq"
 
 # Clean public directory
 if ! rm -rf "${PUBLIC:?}/"*; then
