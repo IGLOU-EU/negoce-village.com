@@ -6,7 +6,7 @@ Afin de se débarrasser de la technologie Microsoft SharePoint et son hébergeme
 - [ ] Mettre à jour les mentions légales
 - [x] Retrait du formulaire de contact
 - [x] Conserver la redirection pour le lien Centre atlantique
-- [ ] Remplacer la recherche par mots clé des actualités par un champ recherche spécifique
+- [x] Remplacer la recherche par mots clé des actualités par un champ recherche spécifique
 - [x] Remplacement du contenu de la page `annuaire-des-adhérents` par une carte interactive
 - [x] Remplacer Facebook par LinkedIn
 - [x] Supprimer les liens Dailymotion
