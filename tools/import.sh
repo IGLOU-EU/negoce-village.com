@@ -97,11 +97,6 @@ if ! update_actu "$PUBLIC/le-négoce-agricole/actualités.html" "$PUBLIC/actuali
     fatal "Failed to update the actualités pages"
 fi
 
-f="$PUBLIC/index.html"
-if ! sed -i 's|</head>|<style>#mainContent{margin-top:-65px!important}</style></head>|g' "$f"; then
-    error "Failed to add custom css in '$f'"
-fi
-
 f="$PUBLIC/contact.html"
 if ! htmlq -r 'div.content.fna_map' -f "$f" | sponge "$f"; then
     fatal "Failed to remove the map in $f"
