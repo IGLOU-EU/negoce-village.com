@@ -15,6 +15,7 @@ exec 2>debug.log
 readonly ROOT="$(dirname "$(dirname "$(readlink -f -- "$0")")")"
 readonly TOOLS="$ROOT/tools"
 readonly PUBLIC="$ROOT/pub"
+readonly RAW="$ROOT/raw"
 readonly NEWS="$ROOT/data_news.json"
 
 readonly NEW_DOMAIN="negoce-village.iglou.eu"
@@ -36,24 +37,48 @@ else
 fi
 
 # Download the site
-wget -P "$PUBLIC" --recursive --no-clobber --page-requisites    \
-    -nH --html-extension --convert-links --no-parent            \
-    --local-encoding=UTF-8 --restrict-file-names=nocontrol      \
-    --domains "$DOMAIN" "$URL"
+if [[ ! -d "$RAW" ]] || [[ -z "$(ls -A "$RAW")" ]]; then
+    warning "The raw directory does not exist or is empty, creating it"
 
-result=$?
-if [[ $result -ne 0 ]]; then
-    warning "The scrapping of the site return a code '$result'"
-    warning "See https://curl.se/libcurl/c/libcurl-errors.html for more details"
+    if ! mkdir -p "$RAW"; then
+        fatal "Failed to create raw directory"
+    fi
+
+    wget -P "$PUBLIC" --recursive --no-clobber --page-requisites    \
+        -nH --html-extension --convert-links --no-parent            \
+        --local-encoding=UTF-8 --restrict-file-names=nocontrol      \
+        --domains "$DOMAIN" "$URL"
+
+    result=$?
+    if [[ $result -ne 0 ]]; then
+        warning "The scrapping of the site return a code '$result'"
+        warning "See https://curl.se/libcurl/c/libcurl-errors.html for more details"
+    fi
+
+    jq -r '.[].Path' "$NEWS" | sed "s|^|$URL|" | parallel --gnu 'wget -P "'"$PUBLIC"'" --recursive --no-parent --html-extension --no-clobber --page-requisites -nH --convert-links --local-encoding=UTF-8 --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
+    jq -r '.[].Path' "$NEWS" | while IFS= read -r file; do 
+        mv "$PUBLIC/$file.html" "$PUBLIC/$file"
+        < "$PUBLIC/$file" grep -E "<a .*/Lists/" | sed -E 's|.*<a href="([^"]+)".*|\1|g' | parallel --gnu 'wget -P "'"$PUBLIC"'" --no-clobber --recursive --no-parent -nH --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
+    done
+
+    curl "$URL/_layouts/15/1036/initstrings.js?rev=rqljWeAFWwNOW%2FF%2FLwdjXg%3D%3D" > "$PUBLIC/_layouts/15/1036/initstrings.js"
+
+    # Save the site to raw directory
+    if ! cp -r "$PUBLIC/*" "$RAW/"; then
+        fatal "Failed to save the site to raw directory"
+    fi
+
+    success "Saved the site to raw directory"
+else
+    warning "The raw directory exists and is not empty, using it"
+
+    # Copy the site from raw directory to public directory
+    if ! cp -r "$RAW/"* "$PUBLIC/"; then
+        fatal "Failed to copy the site from raw directory to public directory"
+    fi
+
+    success "Copied the site from raw directory to public directory"
 fi
-
-jq -r '.[].Path' "$NEWS" | sed "s|^|$URL|" | parallel --gnu 'wget -P "'"$PUBLIC"'" --recursive --no-parent --html-extension --no-clobber --page-requisites -nH --convert-links --local-encoding=UTF-8 --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
-jq -r '.[].Path' "$NEWS" | while IFS= read -r file; do 
-    mv "$PUBLIC/$file.html" "$PUBLIC/$file"
-    < "$PUBLIC/$file" grep -E "<a .*/Lists/" | sed -E 's|.*<a href="([^"]+)".*|\1|g' | parallel --gnu 'wget -P "'"$PUBLIC"'" --no-clobber --recursive --no-parent -nH --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
-done
-
-curl "$URL/_layouts/15/1036/initstrings.js?rev=rqljWeAFWwNOW%2FF%2FLwdjXg%3D%3D" > "$PUBLIC/_layouts/15/1036/initstrings.js"
 
 # Fix errors in the downloaded site
 while IFS= read -r -d '' file; do
