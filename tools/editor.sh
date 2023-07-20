@@ -11,7 +11,7 @@ fix_error() {
     local status=$SUCCESS
 
     case "$file" in 
-        *.html)
+        *.html | *.aspx)
             sed -i -E 's|</?form[^>]*>||g' "$file"
             ;;
         *.css)
@@ -81,4 +81,23 @@ update_site() {
     if ! sed -i 's|<h2 class="h1"><span>Recherche</span></h2>|<h2 class="h1"><span>Recherche</span></h2>'"$htmlform"'|g' "$file"; then
         error "Failed to add custom form in '$file'"
     fi
+}
+
+update_actu() {
+    if [ $# -lt 1 ]; then
+        error "Usage: update_actu <file>..."
+        return $FAILURE
+    fi
+
+    for f in "$@"; do
+        if ! htmlq -r 'section#pageContentSection *' -f "$f" | sponge "$f"; then
+            fatal "Failed to remove the actu in $f"
+        fi
+
+        c='<header><h1 class="h1">Actualités</h1></header><ul id="posts" class="postsList press"></ul><div style="text-align: center;"><button id="prev" style="height: auto;">Précédent</button> <span id="page-num">Page 1 / 12</span> <button id="next" style="height: auto;">Suivant</button></div><script>let currentPage=0;const pageSize=5;let data=[];function updatePageNum(){const e=document.querySelector("#page-num"),t=Math.ceil(data.length/pageSize);e.textContent=`Page ${currentPage+1} / ${t}`}function loadData(){return fetch("/actu.json").then((e=>e.json()))}function renderPage(){const e=currentPage*pageSize,t=e+pageSize,a=data.slice(e,t),n=document.querySelector("#posts");n.innerHTML="",updatePageNum(),a.forEach((e=>{const t=new Date(e.Date),a=`<li><div class="date">Le ${`${t.getDate()}/${t.getMonth()+1}/${t.getFullYear()}`}</div><h3 class="h2"><a href="${e.Path}" style="color:#3f9c35">${e.Title}</a></h3><div class="preview">${e.Desc}</div></li>`;n.innerHTML+=a}))}function handlePrev(){currentPage>0\&\&(currentPage--,renderPage())}function handleNext(){(currentPage+1)*pageSize<data.length\&\&(currentPage++,renderPage())}window.addEventListener("DOMContentLoaded",(e=>{loadData().then((e=>{data=e,renderPage()})),document.querySelector("#prev").addEventListener("click",handlePrev),document.querySelector("#next").addEventListener("click",handleNext)}));</script>'
+        if ! sed -i 's|id="pageContentSection">|id="pageContentSection">'"$c"'|g' "$f"; then
+            fatal "Failed to add actu in $f"
+        fi  
+
+    done
 }
