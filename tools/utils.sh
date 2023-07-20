@@ -13,7 +13,7 @@ fi
 
 # error message
 error() {
-    echo -e "${COLOR_ERROR}[ERROR]${COLOR_RESET} $*" >&2
+    echo -e "${COLOR_ERROR}[ERROR]${COLOR_RESET} $*"
     return $FAILURE
 }
 

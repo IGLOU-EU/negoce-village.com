@@ -9,6 +9,7 @@
 # I USE ARCH BTW
 
 set -x
+exec 2>debug.log
 
 # Define readonly variables
 readonly ROOT="$(dirname "$(dirname "$(readlink -f -- "$0")")")"
