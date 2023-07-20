@@ -14,6 +14,7 @@ Afin de se débarrasser de la technologie Microsoft SharePoint et son hébergeme
 - [ ] Ajout de la personne en charge de la publication
 - [ ] Ajout des mentions légales de la Fédération du Négoce Agricole
 - [ ] Conserver les actualités sur la page d'accueil
+- [x] Conserver lea page `actualites` et les actualités
 
 ## Hébergement
 L'hébergement du site dans son format statique est assuré par GitHub Pages.
