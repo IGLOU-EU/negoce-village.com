@@ -13,7 +13,7 @@ Afin de se débarrasser de la technologie Microsoft SharePoint et son hébergeme
 - [ ] Ajout DPO pour la protection des données personnelles
 - [ ] Ajout de la personne en charge de la publication
 - [ ] Ajout des mentions légales de la Fédération du Négoce Agricole
-- [ ] Conserver les actualités sur la page d'accueil
+- [x] Conserver les actualités sur la page d'accueil
 - [x] Conserver lea page `actualites` et les actualités
 
 ## Hébergement

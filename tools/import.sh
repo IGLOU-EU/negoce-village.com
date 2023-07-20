@@ -64,6 +64,13 @@ if [[ ! -d "$RAW" ]] || [[ -z "$(ls -A "$RAW")" ]]; then
 
     curl "$URL/_layouts/15/1036/initstrings.js?rev=rqljWeAFWwNOW%2FF%2FLwdjXg%3D%3D" > "$PUBLIC/_layouts/15/1036/initstrings.js"
 
+    mkdir -p "$PUBLIC/PublishingImages/fc2a"
+    curl "$URL/PublishingImages/fc2a/puce.png" > "$PUBLIC/PublishingImages/fc2a/puce.png"
+
+    mkdir -p "$PUBLIC/PublishingImages/actualites"
+    curl "$URL/PublishingImages/actualites/REG%20-%20NNE.png" > "$PUBLIC/PublishingImages/actualites/REG - NNE.png"
+    curl "$URL/PublishingImages/actualites/FNA.png" > "$PUBLIC/PublishingImages/actualites/FNA.png"
+
     # Save the site to raw directory
     if ! cp -r "$PUBLIC/*" "$RAW/"; then
         fatal "Failed to save the site to raw directory"
@@ -95,6 +102,21 @@ done < <(find "$PUBLIC" -type f \( -name "*.html" -o -name "*.aspx" \) -print0)
 cp "$NEWS" "$PUBLIC/actu.json"
 if ! update_actu "$PUBLIC/le-négoce-agricole/actualités.html" "$PUBLIC/actualités.html"; then
     fatal "Failed to update the actualités pages"
+fi
+
+f="$PUBLIC/index.html"
+if ! htmlq -r '#WebPartWPQ5 *' -f "$f" | sponge "$f"; then
+    error "Failed to remove the useless news container in $f"
+fi
+if ! sed -i -E 's|(<div[^>]*id="WebPartWPQ5"[^>]*>)|\1'"$(< "$DATA/accueil_news.html")"'|g' "$f"; then
+    error "Failed to add the actualités in $f"
+fi
+
+if ! htmlq -r '#WebPartWPQ6 *' -f "$f" | sponge "$f"; then
+    error "Failed to remove the useless fc2a container in $f"
+fi
+if ! sed -i -E 's|(<div[^>]*id="WebPartWPQ6"[^>]*>)|\1'"$(< "$DATA/accueil_fc2a.html")"'|g' "$f"; then
+    error "Failed to add the fc2a actualités in $f"
 fi
 
 f="$PUBLIC/contact.html"
