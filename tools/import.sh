@@ -151,6 +151,11 @@ else
     success "Index page updated"
 fi
 
+# Re put th doctypes
+while IFS= read -r -d '' file; do
+    (echo '<!DOCTYPE html>'; cat "$file") | sponge "$file" || status=$FAILURE
+done < <(find "$PUBLIC" -type f \( -name "*.html" -o -name "*.aspx" \) -print0)
+
 # Add CNAME file
 if ! echo "$NEW_DOMAIN" > "$PUBLIC/CNAME"; then
     fatal "Failed to add CNAME file"
