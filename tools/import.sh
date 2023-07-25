@@ -144,8 +144,7 @@ f="$PUBLIC/annuaire/annuaire-des-adhérents.html"
 if ! htmlq -r 'section.annuaire>div' -f "$f" | sponge "$f"; then
     fatal "Failed to remove the map in $f"
 fi
-
-c='<iframe src="https://www.google.com/maps/d/embed?mid=1jeDL9eOVTDmLu9ii4BR_KnWksaSJEyY\&amp;ehbc=2E312F" width="100%" height="600" style="margin-bottom: 5em;"></iframe>'
+c='<iframe src="https://www.google.com/maps/d/embed?mid=1Vct3pML9LcD-6y-hBotbL--zTcx0lq4\&amp;ehbc=2E312F" width="100%" height="600" style="margin-bottom: 5em;"></iframe>'
 if ! sed -i -E ':a;N;$!ba;s|/header>[\n ]*</section|/header>\n'"$c"'\n</section|' "$f"; then
     fatal "Failed to add the map in $f"
 else 
