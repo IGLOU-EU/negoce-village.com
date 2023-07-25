@@ -18,6 +18,7 @@ readonly PUBLIC="$ROOT/pub"
 readonly RAW="$ROOT/raw"
 readonly DATA="$ROOT/data"
 readonly NEWS="$DATA/news.json"
+readonly ANNUAIRE="$DATA/annuaire.json"
 
 readonly NEW_DOMAIN="negoce-village.iglou.eu"
 readonly DOMAIN="negoce-village.com"
@@ -56,6 +57,7 @@ if [[ ! -d "$RAW" ]] || [[ -z "$(ls -A "$RAW")" ]]; then
         warning "See https://curl.se/libcurl/c/libcurl-errors.html for more details"
     fi
 
+    jq -r '.[].Image' "$ANNUAIRE" | sed -E 's|.+src="([^"]+)".*|'"$URL"'\1|' | parallel --gnu 'wget -P "'"$PUBLIC"'" --no-clobber --recursive --no-parent -nH --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
     jq -r '.[].Path' "$NEWS" | sed "s|^|$URL|" | parallel --gnu 'wget -P "'"$PUBLIC"'" --recursive --no-parent --html-extension --no-clobber --page-requisites -nH --convert-links --local-encoding=UTF-8 --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
     jq -r '.[].Path' "$NEWS" | while IFS= read -r file; do 
         mv "$PUBLIC/$file.html" "$PUBLIC/$file"
@@ -63,6 +65,7 @@ if [[ ! -d "$RAW" ]] || [[ -z "$(ls -A "$RAW")" ]]; then
     done
 
     curl "$URL/_layouts/15/1036/initstrings.js?rev=rqljWeAFWwNOW%2FF%2FLwdjXg%3D%3D" > "$PUBLIC/_layouts/15/1036/initstrings.js"
+    curl "$URL/_layouts/15/1036/styles/Themable/corev15.css" > "$PUBLIC/_layouts/15/1036/styles/Themable/corev15.css?rev=AYgPqi8rrzekEl%2FnFu0Fow==.css"
 
     mkdir -p "$PUBLIC/PublishingImages/fc2a"
     curl "$URL/PublishingImages/fc2a/puce.png" > "$PUBLIC/PublishingImages/fc2a/puce.png"
@@ -72,7 +75,7 @@ if [[ ! -d "$RAW" ]] || [[ -z "$(ls -A "$RAW")" ]]; then
     curl "$URL/PublishingImages/actualites/FNA.png" > "$PUBLIC/PublishingImages/actualites/FNA.png"
 
     # Save the site to raw directory
-    if ! cp -r "$PUBLIC/*" "$RAW/"; then
+    if ! cp -r "$PUBLIC/"* "$RAW/"; then
         fatal "Failed to save the site to raw directory"
     fi
 
@@ -98,6 +101,17 @@ success "Fixed errors in the downloaded site"
 while IFS= read -r -d '' file; do
     update_site "$file" || fatal "Failed to update the site"
 done < <(find "$PUBLIC" -type f \( -name "*.html" -o -name "*.aspx" \) -print0)
+
+cp "$ANNUAIRE" "$PUBLIC/annuaire.json"
+f="$PUBLIC/annuaire/réseaux-économiques.html"
+if ! htmlq -r 'section#pageContentSection *' -f "$f" | sponge "$f"; then
+    fatal "Failed to remove the old annuaire in $f"
+fi
+
+c='<header><h1 class="h1">Réseaux économiques</h1></header><ul id="posts" class="postsList press"></ul><div style="text-align: center;"><button id="prev" style="height: auto;">Précédent</button> <span id="page-num">Page 1 / 1</span> <button id="next" style="height: auto;">Suivant</button></div><script>let currentPage=0;const pageSize=3;let data=[];function updatePageNum(){const e=document.querySelector("#page-num"),t=Math.ceil(data.length/pageSize);e.textContent=`Page ${currentPage+1} / ${t}`}function loadData(){return fetch("/annuaire.json").then((e=>e.json()))}function renderPage(){const e=currentPage*pageSize,t=e+pageSize,a=data.slice(e,t),n=document.querySelector("#posts");n.innerHTML="",updatePageNum(),a.forEach((e=>{const t=new Date(e.Date),a=`<li><div class="cbs-picture3LinesContainer">${e.Image}<div class="text"><h3 class="h2"> ${e.Title} </h3><div class="preview">${e.Content}</div><div class="cbs-pictureLine3 ms-textSmall ms-noWrap"><a class="cbs-picture3LinesLine1Link" href="${e.Link}" target="_blank"> Voir les membres des réseaux économiques </a></div></div><div class="clear"></div></div></li>`;n.innerHTML+=a}))}function handlePrev(){currentPage>0\&\&(currentPage--,renderPage())}function handleNext(){(currentPage+1)*pageSize<data.length\&\&(currentPage++,renderPage())}window.addEventListener("DOMContentLoaded",(e=>{loadData().then((e=>{data=e,renderPage()})),document.querySelector("#prev").addEventListener("click",handlePrev),document.querySelector("#next").addEventListener("click",handleNext)}));</script>'
+if ! sed -i 's|id="pageContentSection">|id="pageContentSection">'"$c"'|g' "$f"; then
+    fatal "Failed to add actu in $f"
+fi
 
 cp "$NEWS" "$PUBLIC/actu.json"
 if ! update_actu "$PUBLIC/le-négoce-agricole/actualités.html" "$PUBLIC/actualités.html"; then
