@@ -8,8 +8,10 @@
 # But I don't want to do it for free, so I do it for fun.
 # I USE ARCH BTW
 
-set -x
 exec 2>debug.log
+date 1>&2
+
+set -x
 
 # Define readonly variables
 readonly ROOT="$(dirname "$(dirname "$(readlink -f -- "$0")")")"
@@ -57,11 +59,10 @@ if [[ ! -d "$RAW" ]] || [[ -z "$(ls -A "$RAW")" ]]; then
         warning "See https://curl.se/libcurl/c/libcurl-errors.html for more details"
     fi
 
-    jq -r '.[].Image' "$ANNUAIRE" | sed -E 's|.+src="([^"]+)".*|'"$URL"'\1|' | parallel --gnu 'wget -P "'"$PUBLIC"'" --no-clobber --recursive --no-parent -nH --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
-    jq -r '.[].Path' "$NEWS" | sed "s|^|$URL|" | parallel --gnu 'wget -P "'"$PUBLIC"'" --recursive --no-parent --html-extension --no-clobber --page-requisites -nH --convert-links --local-encoding=UTF-8 --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
+    jq -r '.[].Image' "$ANNUAIRE" | sed -E 's|.+src="([^"]+)".*|'"$URL"'\1|' | parallel --gnu 'wget -P "'"$PUBLIC"'" --recursive --no-clobber --page-requisites -nH --html-extension --convert-links --no-parent --local-encoding=UTF-8 --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
+    jq -r '.[].Path' "$NEWS" | sed "s|^|$URL|" | parallel --gnu 'wget -P "'"$PUBLIC"'" --recursive --no-clobber --page-requisites -nH --html-extension --convert-links --no-parent --local-encoding=UTF-8 --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
     jq -r '.[].Path' "$NEWS" | while IFS= read -r file; do 
-        mv "$PUBLIC/$file.html" "$PUBLIC/$file"
-        < "$PUBLIC/$file" grep -E "<a .*/Lists/" | sed -E 's|.*<a href="([^"]+)".*|\1|g' | parallel --gnu 'wget -P "'"$PUBLIC"'" --no-clobber --recursive --no-parent -nH --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
+        < "$PUBLIC/$file" grep -E "<a .*/Lists/" | sed -E 's|.*<a .*href="([^"]+)".*|\1|g' | parallel --gnu 'wget -P "'"$PUBLIC"'" --no-clobber --recursive --no-parent -nH --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
     done
 
     curl "$URL/_layouts/15/1036/initstrings.js?rev=rqljWeAFWwNOW%2FF%2FLwdjXg%3D%3D" > "$PUBLIC/_layouts/15/1036/initstrings.js"
