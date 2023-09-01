@@ -14,7 +14,9 @@ date 1>&2
 set -x
 
 # Define readonly variables
-readonly ROOT="$(dirname "$(dirname "$(readlink -f -- "$0")")")"
+ROOT="$(dirname "$(dirname "$(readlink -f -- "$0")")")"
+readonly ROOT
+
 readonly TOOLS="$ROOT/tools"
 readonly PUBLIC="$ROOT/pub"
 readonly RAW="$ROOT/raw"
