@@ -159,6 +159,14 @@ else
     success "Index page updated"
 fi
 
+f="$PUBLIC/Pages/mentionslegales.aspx"
+if ! htmlq -r 'section#pageContentSection *' -f "$f" | sponge "$f"; then
+    fatal "Failed to remove old mentions légales in $f"
+fi
+if ! sed -i -E 's|(<section[^>]*id="pageContentSection"[^>]*>)|\1'"$(< "$DATA/mentionslegales.html")"'|g' "$f"; then
+    error "Failed to add the menu in $f"
+fi
+
 # Re put the doctypes
 while IFS= read -r -d '' file; do
     if [[ ! $(file --mime-type "$file") =~ (text/html|application/xml|text/asp)$ ]]; then
