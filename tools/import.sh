@@ -49,8 +49,8 @@ if [[ ! -d "$RAW" ]] || [[ -z "$(ls -A "$RAW")" ]]; then
     fi
 
     wget -P "$PUBLIC" --recursive --no-clobber --page-requisites    \
-        -nH --html-extension --convert-links --no-parent            \
-        --local-encoding=UTF-8 --restrict-file-names=nocontrol      \
+        -nH --convert-links --no-parent            \
+        --restrict-file-names=nocontrol      \
         --domains "$DOMAIN" "$URL"
 
     result=$?
@@ -59,14 +59,14 @@ if [[ ! -d "$RAW" ]] || [[ -z "$(ls -A "$RAW")" ]]; then
         warning "See https://curl.se/libcurl/c/libcurl-errors.html for more details"
     fi
 
-    jq -r '.[].Image' "$ANNUAIRE" | sed -E 's|.+src="([^"]+)".*|'"$URL"'\1|' | parallel --gnu 'wget -P "'"$PUBLIC"'" --recursive --no-clobber --page-requisites -nH --html-extension --convert-links --no-parent --local-encoding=UTF-8 --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
-    jq -r '.[].Path' "$NEWS" | sed "s|^|$URL|" | parallel --gnu 'wget -P "'"$PUBLIC"'" --recursive --no-clobber --page-requisites -nH --html-extension --convert-links --no-parent --local-encoding=UTF-8 --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
+    jq -r '.[].Image' "$ANNUAIRE" | sed -E 's|.+src="([^"]+)".*|'"$URL"'\1|' | parallel --gnu 'wget -P "'"$PUBLIC"'" --recursive --no-clobber --page-requisites -nH --convert-links --no-parent --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
+    jq -r '.[].Path' "$NEWS" | sed "s|^|$URL|" | parallel --gnu 'wget -P "'"$PUBLIC"'" --recursive --no-clobber --page-requisites -nH --convert-links --no-parent --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
     jq -r '.[].Path' "$NEWS" | while IFS= read -r file; do 
         < "$PUBLIC/$file" grep -E "<a .*/Lists/" | sed -E 's|.*<a .*href="([^"]+)".*|\1|g' | parallel --gnu 'wget -P "'"$PUBLIC"'" --no-clobber --recursive --no-parent -nH --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
     done
 
-    curl "$URL/_layouts/15/1036/initstrings.js?rev=rqljWeAFWwNOW%2FF%2FLwdjXg%3D%3D" > "$PUBLIC/_layouts/15/1036/initstrings.js"
-    curl "$URL/_layouts/15/1036/styles/Themable/corev15.css" > "$PUBLIC/_layouts/15/1036/styles/Themable/corev15.css?rev=AYgPqi8rrzekEl%2FnFu0Fow==.css"
+    curl "$URL/_layouts/15/1036/initstrings.js" > "$PUBLIC/_layouts/15/1036/initstrings.js"
+    curl "$URL/_layouts/15/1036/styles/Themable/corev15.css" > "$PUBLIC/_layouts/15/1036/styles/Themable/corev15.css"
 
     mkdir -p "$PUBLIC/PublishingImages/fc2a"
     curl "$URL/PublishingImages/fc2a/puce.png" > "$PUBLIC/PublishingImages/fc2a/puce.png"
@@ -82,7 +82,7 @@ if [[ ! -d "$RAW" ]] || [[ -z "$(ls -A "$RAW")" ]]; then
 
     success "Saved the site to raw directory"
 else
-    warning "The raw directory exists and is not empty, using it"
+    warning "The raw directory is not empty, using it"
 
     # Copy the site from raw directory to public directory
     if ! cp -r "$RAW/"* "$PUBLIC/"; then
@@ -92,6 +92,9 @@ else
     success "Copied the site from raw directory to public directory"
 fi
 
+# Remove url arg from file name
+find "$PUBLIC" -type f -exec sh -c 'f="$1"; mv "$f" "$(echo "$f" | cut -d? -f1)"' shell "{}" \;
+
 # Fix errors in the downloaded site
 while IFS= read -r -d '' file; do
     fix_error "$file" || fatal "Failed to fix errors in the downloaded site"
@@ -100,11 +103,15 @@ success "Fixed errors in the downloaded site"
 
 # Update the site
 while IFS= read -r -d '' file; do
+    if [[ ! $(file --mime-type "$file") =~ (text/html|application/xml|text/asp)$ ]]; then
+        continue
+    fi
+
     update_site "$file" || fatal "Failed to update the site"
-done < <(find "$PUBLIC" -type f \( -name "*.html" -o -name "*.aspx" \) -print0)
+done < <(find "$PUBLIC" -type f -print0)
 
 cp "$ANNUAIRE" "$PUBLIC/annuaire.json"
-f="$PUBLIC/annuaire/réseaux-économiques.html"
+f="$PUBLIC/annuaire/réseaux-économiques"
 if ! htmlq -r 'section#pageContentSection *' -f "$f" | sponge "$f"; then
     fatal "Failed to remove the old annuaire in $f"
 fi
@@ -115,7 +122,7 @@ if ! sed -i 's|id="pageContentSection">|id="pageContentSection">'"$c"'|g' "$f"; 
 fi
 
 cp "$NEWS" "$PUBLIC/actu.json"
-if ! update_actu "$PUBLIC/le-négoce-agricole/actualités.html" "$PUBLIC/actualités.html"; then
+if ! update_actu "$PUBLIC/le-négoce-agricole/actualités" "$PUBLIC/actualités"; then
     fatal "Failed to update the actualités pages"
 fi
 
@@ -134,14 +141,14 @@ if ! sed -i -E 's|(<div[^>]*id="WebPartWPQ6"[^>]*>)|\1'"$(< "$DATA/accueil_fc2a.
     error "Failed to add the fc2a actualités in $f"
 fi
 
-f="$PUBLIC/contact.html"
+f="$PUBLIC/contact"
 if ! htmlq -r 'div.content.fna_map' -f "$f" | sponge "$f"; then
     fatal "Failed to remove the map in $f"
 else 
     success "Contact page updated"
 fi
 
-f="$PUBLIC/annuaire/annuaire-des-adhérents.html"
+f="$PUBLIC/annuaire/annuaire-des-adhérents"
 if ! htmlq -r 'section.annuaire>div' -f "$f" | sponge "$f"; then
     fatal "Failed to remove the map in $f"
 fi
@@ -152,10 +159,14 @@ else
     success "Index page updated"
 fi
 
-# Re put th doctypes
+# Re put the doctypes
 while IFS= read -r -d '' file; do
+    if [[ ! $(file --mime-type "$file") =~ (text/html|application/xml|text/asp)$ ]]; then
+        continue
+    fi
+
     (echo '<!DOCTYPE html>'; cat "$file") | sponge "$file" || status=$FAILURE
-done < <(find "$PUBLIC" -type f \( -name "*.html" -o -name "*.aspx" \) -print0)
+done < <(find "$PUBLIC" -type f -print0)
 
 # Add CNAME file
 if ! echo "$NEW_DOMAIN" > "$PUBLIC/CNAME"; then
