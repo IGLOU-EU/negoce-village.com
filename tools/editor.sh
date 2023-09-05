@@ -93,6 +93,14 @@ update_site() {
     local linkedin='<li class="linkedin"><a href="https://fr.linkedin.com/company/federationnegoceagricole" target="_blank" style="width:auto" title="Page LinkedIn de la FC2A"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor" class="mercado-match" width="24" height="24" focusable="false"><path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.3 6.5a1.78 1.78 0 01-1.8 1.75zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93A1.74 1.74 0 0013 14.19a.66.66 0 000 .14V19h-3v-9h2.9v1.3a3.11 3.11 0 012.7-1.4c1.55 0 3.36.86 3.36 3.66z"></path></svg></a></li>'
     local htmlform='<form id="searchForm" method="get" onsubmit="event.preventDefault(); window.location.href=\x27https://duckduckgo.com/?q=\x27+ encodeURIComponent(document.querySelector(\x27#query\x27).value) + \x27+site%3Anegoce-village.com%2FPages\&t=h_\&ia=web\x27;" class="ms-srch-sb-border ms-srch-sb" style="width: 100%;position: relative;"><input type="text" id="query" name="q" placeholder="Rechercher..." accesskey="S" title="Rechercher un article" required><input type="submit" class="ms-srch-sb-searchLink" style="padding: 0;min-width: unset;top: 5px;position: absolute;" value=""></form>'
 
+    if ! htmlq -r 'nav#mainNav' -f "$file" | sponge "$file"; then
+        error "Failed to remove old menu in '$file'"
+    fi
+
+    if ! sed -i -E 's|(<div[^>]*id="ctl00_separateurMenu"[^>]*>)|'"$(< "$DATA/menu.html")"'\1|g' "$file"; then
+        error "Failed to add the menu in $file"
+    fi
+
     if ! sed -i 's|href="http://www.negoce-centre-atlantique.com/"|href="http://www.negoce-centre-atlantique.com/" target="_blank"|g' "$file"; then
         error "Failed to add target in '$file'"
     fi
@@ -115,6 +123,14 @@ update_site() {
 
     if ! sed -i 's|<h2 class="h1"><span>Recherche</span></h2>|<h2 class="h1"><span>Recherche</span></h2>'"$htmlform"'|g' "$file"; then
         error "Failed to add custom form in '$file'"
+    fi
+
+    if ! htmlq -r 'footer#footer *' -f "$file" | sponge "$file"; then
+        error "Failed to remove old footer in '$file'"
+    fi
+
+    if ! sed -i -E 's|(<footer [^>]*>)|\1'"$(< "$DATA/footer.html")"'|g' "$file"; then
+        error "Failed to add the footer in $file"
     fi
 }
 

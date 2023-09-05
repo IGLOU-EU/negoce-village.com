@@ -97,11 +97,24 @@ else
     success "Copied the site from raw directory to public directory"
 fi
 
-# Remove url arg from file name
-find "$PUBLIC" -type f -exec sh -c 'f="$1"; mv "$f" "$(echo "$f" | cut -d? -f1)"' shell "{}" \;
+while IFS= read -r -d '' _file; do
+    # Remove url arg from file name
+    file="$(echo "$_file" | cut -d? -f1)"
 
-# Fix errors in the downloaded site
-while IFS= read -r -d '' file; do
+    # change to html extension
+    # required by github pages
+    if [[ $file =~ \.aspx$ ]]; then
+       file="${file%.aspx}.html"
+    elif [[ $(file --mime-type "$file") =~ text/html$ ]]; then
+        file="${file%.html}.html"
+    fi
+
+    # rename file
+    if [[ "$_file" != "$file" ]]; then
+        mv "$_file" "$file" || fatal "Failed to rename file '$_file' to '$file'"
+    fi
+
+    # Fix errors in the downloaded site
     fix_error "$file" || fatal "Failed to fix errors in the downloaded site"
 done < <(find "$PUBLIC" -type f -print0)
 success "Fixed errors in the downloaded site"
@@ -116,7 +129,7 @@ while IFS= read -r -d '' file; do
 done < <(find "$PUBLIC" -type f -print0)
 
 cp "$ANNUAIRE" "$PUBLIC/annuaire.json"
-f="$PUBLIC/annuaire/réseaux-économiques"
+f="$PUBLIC/annuaire/réseaux-économiques.html"
 if ! htmlq -r 'section#pageContentSection *' -f "$f" | sponge "$f"; then
     fatal "Failed to remove the old annuaire in $f"
 fi
@@ -127,7 +140,7 @@ if ! sed -i 's|id="pageContentSection">|id="pageContentSection">'"$c"'|g' "$f"; 
 fi
 
 cp "$NEWS" "$PUBLIC/actu.json"
-if ! update_actu "$PUBLIC/le-négoce-agricole/actualités" "$PUBLIC/actualités"; then
+if ! update_actu "$PUBLIC/le-négoce-agricole/actualités.html" "$PUBLIC/actualités.html"; then
     fatal "Failed to update the actualités pages"
 fi
 
@@ -146,14 +159,14 @@ if ! sed -i -E 's|(<div[^>]*id="WebPartWPQ6"[^>]*>)|\1'"$(< "$DATA/accueil_fc2a.
     error "Failed to add the fc2a actualités in $f"
 fi
 
-f="$PUBLIC/contact"
+f="$PUBLIC/contact.html"
 if ! htmlq -r 'div.content.fna_map' -f "$f" | sponge "$f"; then
     fatal "Failed to remove the map in $f"
 else 
     success "Contact page updated"
 fi
 
-f="$PUBLIC/annuaire/annuaire-des-adhérents"
+f="$PUBLIC/annuaire/annuaire-des-adhérents.html"
 if ! htmlq -r 'section.annuaire>div' -f "$f" | sponge "$f"; then
     fatal "Failed to remove the map in $f"
 fi
@@ -164,7 +177,7 @@ else
     success "Index page updated"
 fi
 
-f="$PUBLIC/Pages/mentionslegales.aspx"
+f="$PUBLIC/Pages/mentionslegales.html"
 if ! htmlq -r 'section#pageContentSection *' -f "$f" | sponge "$f"; then
     fatal "Failed to remove old mentions légales in $f"
 fi
