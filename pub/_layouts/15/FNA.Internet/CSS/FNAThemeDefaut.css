@@ -1172,7 +1172,7 @@ font-size:72pt;
 -ms-name:"Bordure fine";
 /* [ReplaceColor(themeColor:"BodyText",opacity:"1")] */ background-color:#444;
 /* [ReplaceColor(themeColor:"BodyText-Darker",opacity:"1")] */ border:1px solid #333;
-/* [RecolorImage(themeColor:"SubtleBodyText",method:"Tinting")] */ background-image:url("/_layouts/15/images/tabtitlerowbottombg.png%3Frev=23.html");
+/* [RecolorImage(themeColor:"SubtleBodyText",method:"Tinting")] */ background-image:url("../../images/tabtitlerowbottombg.png?rev=23");
 background-repeat:repeat-x;
 background-position:top;
 }
@@ -1191,7 +1191,7 @@ padding:2px;
 padding:15px;
 /* [ReplaceColor(themeColor:"BodyText-Darker",opacity:"1")] */ background-color:#333;
 /* [ReplaceColor(themeColor:"BodyText",opacity:"1")] */ border:1px solid #444;
-/* [RecolorImage(themeColor:"BodyText-Darker",method:"Tinting")] */ background-image:url("/_layouts/15/images/tabtitlerowbottombg.png%3Frev=23.html");
+/* [RecolorImage(themeColor:"BodyText-Darker",method:"Tinting")] */ background-image:url("../../images/tabtitlerowbottombg.png?rev=23");
 background-attachment:fixed;
 background-repeat:repeat-x;
 background-position:left bottom;
@@ -1206,7 +1206,7 @@ padding-bottom:33px;
 /* [ReplaceColor(themeColor:"Lines")] */ border-bottom:1px solid #ababab;
 /* [ReplaceColor(themeColor:"SubtleLines")] */ border-left:1px solid #c6c6c6;
 /* [ReplaceColor(themeColor:"Lines")] */ border-right:1px solid #ababab;
-background-image:url("/_layouts/15/images/selbg.png%3Frev=23");
+background-image:url("../../images/selbg.png?rev=23");
 background-repeat:repeat-x;
 background-position:top;
 }

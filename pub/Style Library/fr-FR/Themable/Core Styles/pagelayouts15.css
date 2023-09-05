@@ -137,7 +137,8 @@ padding:0px 0px 0px 11px;
 {
 vertical-align:middle;
 }
-*:first-child+html .right-wp-zone {
+*:first-child+html .right-wp-zone,
+{
 width:100%;
 }
 .s4-specialNavLinkList
