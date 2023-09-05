@@ -51,8 +51,8 @@ if [[ ! -d "$RAW" ]] || [[ -z "$(ls -A "$RAW")" ]]; then
     fi
 
     wget -P "$PUBLIC" --recursive --no-clobber --page-requisites    \
-        -nH --convert-links --no-parent            \
-        --restrict-file-names=nocontrol      \
+        -X "_catalogs" -nH --convert-links --no-parent              \
+        --restrict-file-names=nocontrol                             \
         --domains "$DOMAIN" "$URL"
 
     result=$?
@@ -76,6 +76,8 @@ if [[ ! -d "$RAW" ]] || [[ -z "$(ls -A "$RAW")" ]]; then
     mkdir -p "$PUBLIC/PublishingImages/actualites"
     curl "$URL/PublishingImages/actualites/REG%20-%20NNE.png" > "$PUBLIC/PublishingImages/actualites/REG - NNE.png"
     curl "$URL/PublishingImages/actualites/FNA.png" > "$PUBLIC/PublishingImages/actualites/FNA.png"
+
+    find_dead_links
 
     # Save the site to raw directory
     if ! cp -r "$PUBLIC/"* "$RAW/"; then
@@ -169,7 +171,7 @@ if ! sed -i -E 's|(<section[^>]*id="pageContentSection"[^>]*>)|\1'"$(< "$DATA/me
     error "Failed to add the menu in $f"
 fi
 
-# Re put the doctypes
+# Replacing the doctype
 while IFS= read -r -d '' file; do
     if [[ ! $(file --mime-type "$file") =~ (text/html|application/xml|text/asp)$ ]]; then
         continue

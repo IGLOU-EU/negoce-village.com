@@ -1,5 +1,39 @@
 #!/bin/bash
 
+# find dead links to try to fix them
+find_dead_links() {
+    warning "Trying to find dead links, this may take a while..."
+
+    php -S localhost:8000 -t "$PUBLIC" > /dev/null 2>&1 &
+    server_pid=$!
+    sleep 2
+
+    local _tmp="$ROOT/tmp_wget.log"
+    wget wget -X "_catalogs" --spider -r -nd -nv -l 3 -o "$_tmp" "http://localhost:8000/"
+    while IFS= read -r -d '' p; do
+        if [[ ! $(file --mime-type "$p") =~ (text/html|application/xml|text/asp)$ ]]; then
+            continue
+        fi
+
+        # remove PUBLIC from the path
+        p="$(sed -E "s|^$PUBLIC/?||" <<< "$p")"
+        warning "Checking $p"
+
+        wget -X "_catalogs" --spider -r -nd -nv -l 4 "http://localhost:8000/$p" >> "$_tmp" 2>&1
+    done < <(find "$PUBLIC/Pages" -type f -print0)
+
+    kill "$server_pid"
+
+    sort -u -o "$_tmp" "$_tmp"
+    while IFS= read -r _url; do
+        _url="$(sed 's|http://localhost:8000/|'"$URL"'|' <<< "$_url")"
+        warning "Trying to download '$_url'"
+
+        wget -P "$PUBLIC" --no-clobber --page-requisites -nH --convert-links --restrict-file-names=nocontrol "$_url"
+    done < <(grep -E "^http://.+[^:]$" "$_tmp")
+    rm -f "$_tmp"
+}
+
 # fix errors in the downloaded site
 fix_error() {
     if [ $# -ne 1 ]; then
