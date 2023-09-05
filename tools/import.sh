@@ -67,6 +67,7 @@ if [[ ! -d "$RAW" ]] || [[ -z "$(ls -A "$RAW")" ]]; then
         < "$PUBLIC/$file" grep -E "<a .*/Lists/" | sed -E 's|.*<a .*href="([^"]+)".*|\1|g' | parallel --gnu 'wget -P "'"$PUBLIC"'" --no-clobber --recursive --no-parent -nH --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
     done
 
+    curl "$URL/Pages/PageNotFoundError.aspx" > "$PUBLIC/404.html"
     curl "$URL/_layouts/15/1036/initstrings.js" > "$PUBLIC/_layouts/15/1036/initstrings.js"
     curl "$URL/_layouts/15/1036/styles/Themable/corev15.css" > "$PUBLIC/_layouts/15/1036/styles/Themable/corev15.css"
 
