@@ -184,6 +184,13 @@ else
     success "Contact page updated"
 fi
 
+f="$PUBLIC/Pages/contact.html"
+if ! htmlq -r 'div.content.fna_map' -f "$f" | sponge "$f"; then
+    fatal "Failed to remove the map in $f"
+else 
+    success "Contact page updated"
+fi
+
 f="$PUBLIC/annuaire/annuaire-des-adhérents.html"
 if ! htmlq -r 'section.annuaire>div' -f "$f" | sponge "$f"; then
     fatal "Failed to remove the map in $f"
