@@ -22,6 +22,7 @@ readonly PUBLIC="$ROOT/pub"
 readonly RAW="$ROOT/raw"
 readonly DATA="$ROOT/data"
 readonly NEWS="$DATA/news.json"
+readonly PRESSE="$DATA/presse.json"
 readonly ANNUAIRE="$DATA/annuaire.json"
 
 readonly NEW_DOMAIN="negoce-village.iglou.eu"
@@ -62,7 +63,13 @@ if [[ ! -d "$RAW" ]] || [[ -z "$(ls -A "$RAW")" ]]; then
     fi
 
     jq -r '.[].Image' "$ANNUAIRE" | sed -E 's|.+src="([^"]+)".*|'"$URL"'\1|' | parallel --gnu 'wget -P "'"$PUBLIC"'" --recursive --no-clobber --page-requisites -nH --convert-links --no-parent --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
-    jq -r '.[].Path' "$NEWS" | sed "s|^|$URL|" | parallel --gnu 'wget -P "'"$PUBLIC"'" --recursive --no-clobber --page-requisites -nH --convert-links --no-parent --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
+
+    jq -r '.[].Path' "$PRESSE" | sed "s|^/|$URL|;s|\.html|.aspx|" | parallel --gnu 'wget -P "'"$PUBLIC"'" --recursive --no-clobber --page-requisites -nH --convert-links --no-parent --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
+    jq -r '.[].Path' "$PRESSE" | while IFS= read -r file; do 
+        < "$PUBLIC/$file" grep -E "<a .*/Lists/" | sed -E 's|.*<a .*href="([^"]+)".*|\1|g' | parallel --gnu 'wget -P "'"$PUBLIC"'" --no-clobber --recursive --no-parent -nH --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
+    done
+
+    jq -r '.[].Path' "$NEWS" | sed "s|^/|$URL|;s|\.html|.aspx|" | parallel --gnu 'wget -P "'"$PUBLIC"'" --recursive --no-clobber --page-requisites -nH --convert-links --no-parent --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
     jq -r '.[].Path' "$NEWS" | while IFS= read -r file; do 
         < "$PUBLIC/$file" grep -E "<a .*/Lists/" | sed -E 's|.*<a .*href="([^"]+)".*|\1|g' | parallel --gnu 'wget -P "'"$PUBLIC"'" --no-clobber --recursive --no-parent -nH --restrict-file-names=nocontrol --domains "'"$DOMAIN"'" {}'
     done
@@ -111,7 +118,7 @@ while IFS= read -r -d '' _file; do
 
     # rename file
     if [[ "$_file" != "$file" ]]; then
-        mv "$_file" "$file" || fatal "Failed to rename file '$_file' to '$file'"
+        mv -f "$_file" "$file" || fatal "Failed to rename file '$_file' to '$file'"
     fi
 
     # Fix errors in the downloaded site
@@ -135,6 +142,17 @@ if ! htmlq -r 'section#pageContentSection *' -f "$f" | sponge "$f"; then
 fi
 
 c='<header><h1 class="h1">Réseaux économiques</h1></header><ul id="posts" class="postsList press"></ul><div style="text-align: center;"><button id="prev" style="height: auto;">Précédent</button> <span id="page-num">Page 1 / 1</span> <button id="next" style="height: auto;">Suivant</button></div><script>let currentPage=0;const pageSize=3;let data=[];function updatePageNum(){const e=document.querySelector("#page-num"),t=Math.ceil(data.length/pageSize);e.textContent=`Page ${currentPage+1} / ${t}`}function loadData(){return fetch("/annuaire.json").then((e=>e.json()))}function renderPage(){const e=currentPage*pageSize,t=e+pageSize,a=data.slice(e,t),n=document.querySelector("#posts");n.innerHTML="",updatePageNum(),a.forEach((e=>{const t=new Date(e.Date),a=`<li><div class="cbs-picture3LinesContainer">${e.Image}<div class="text"><h3 class="h2"> ${e.Title} </h3><div class="preview">${e.Content}</div><div class="cbs-pictureLine3 ms-textSmall ms-noWrap"><a class="cbs-picture3LinesLine1Link" href="${e.Link}" target="_blank"> Voir les membres des réseaux économiques </a></div></div><div class="clear"></div></div></li>`;n.innerHTML+=a}))}function handlePrev(){currentPage>0\&\&(currentPage--,renderPage())}function handleNext(){(currentPage+1)*pageSize<data.length\&\&(currentPage++,renderPage())}window.addEventListener("DOMContentLoaded",(e=>{loadData().then((e=>{data=e,renderPage()})),document.querySelector("#prev").addEventListener("click",handlePrev),document.querySelector("#next").addEventListener("click",handleNext)}));</script>'
+if ! sed -i 's|id="pageContentSection">|id="pageContentSection">'"$c"'|g' "$f"; then
+    fatal "Failed to add actu in $f"
+fi
+
+cp "$PRESSE" "$PUBLIC/presse.json"
+f="$PUBLIC/espace-médias/communiqués-de-presse.html"
+if ! htmlq -r 'section#pageContentSection *' -f "$f" | sponge "$f"; then
+    fatal "Failed to remove the old presse in $f"
+fi
+
+c='<header><h1 class="h1">Communiqués de presse</h1></header><ul id="posts" class="postsList press"></ul><div style="text-align: center;"><button id="prev" style="height: auto;">Précédent</button> <span id="page-num">Page 1 / 12</span> <button id="next" style="height: auto;">Suivant</button></div><script>let currentPage=0;const pageSize=5;let data=[];function updatePageNum(){const e=document.querySelector("#page-num"),t=Math.ceil(data.length/pageSize);e.textContent=`Page ${currentPage+1} / ${t}`}function loadData(){return fetch("/presse.json").then((e=>e.json()))}function renderPage(){const e=currentPage*pageSize,t=e+pageSize,a=data.slice(e,t),n=document.querySelector("#posts");n.innerHTML="",updatePageNum(),a.forEach((e=>{const t=new Date(e.Date),a=`<li><div class="date">Le ${`${t.getDate()}/${t.getMonth()+1}/${t.getFullYear()}`}</div><h3 class="h2"><a href="${e.Path}" style="color:#3f9c35">${e.Title}</a></h3><div class="preview">${e.Desc}</div></li>`;n.innerHTML+=a}))}function handlePrev(){currentPage>0\&\&(currentPage--,renderPage())}function handleNext(){(currentPage+1)*pageSize<data.length\&\&(currentPage++,renderPage())}window.addEventListener("DOMContentLoaded",(e=>{loadData().then((e=>{data=e,renderPage()})),document.querySelector("#prev").addEventListener("click",handlePrev),document.querySelector("#next").addEventListener("click",handleNext)}));</script>'
 if ! sed -i 's|id="pageContentSection">|id="pageContentSection">'"$c"'|g' "$f"; then
     fatal "Failed to add actu in $f"
 fi

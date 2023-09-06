@@ -29,7 +29,7 @@ find_dead_links() {
         _url="$(sed 's|http://localhost:8000/|'"$URL"'|' <<< "$_url")"
         warning "Trying to download '$_url'"
 
-        wget -P "$PUBLIC" --no-clobber --page-requisites -nH --convert-links --restrict-file-names=nocontrol "$_url"
+        wget -P "$PUBLIC" -nc --page-requisites -nH --convert-links --restrict-file-names=nocontrol "$_url"
     done < <(grep -E "^http://.+[^:]$" "$_tmp")
     rm -f "$_tmp"
 }
