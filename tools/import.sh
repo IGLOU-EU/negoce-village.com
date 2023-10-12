@@ -25,7 +25,7 @@ readonly NEWS="$DATA/news.json"
 readonly PRESSE="$DATA/presse.json"
 readonly ANNUAIRE="$DATA/annuaire.json"
 
-readonly NEW_DOMAIN="negoce-village.iglou.eu"
+readonly NEW_DOMAIN="www.negoce-village.com"
 readonly DOMAIN="negoce-village.com"
 readonly URL="http://www.$DOMAIN/"
 

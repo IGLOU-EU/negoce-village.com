@@ -15,7 +15,9 @@ Afin de se débarrasser de la technologie Microsoft SharePoint et son hébergeme
 - [x] Ajout des mentions légales de la Fédération du Négoce Agricole
 - [x] Conserver les actualités sur la page d'accueil
 - [x] Conserver lea page `actualites` et les actualités
-- [ ] Migration définitive du site vers un hébergement statique
+- [x] Migration définitive du site vers un hébergement statique
+- [ ] Supprimer le pointage `negoce-village.iglou.eu`
+- [ ] Ajouter la redirection `negoce-village.com` vers `www.negoce-village.com`
 
 ## Hébergement
 L'hébergement du site dans son format statique est assuré par GitHub Pages.
