@@ -3,18 +3,19 @@ Afin de se débarrasser de la technologie Microsoft SharePoint et son hébergeme
 
 ## TODO
 - [x] Migrer les fichiers du site vers le dépôt
-- [ ] Mettre à jour les mentions légales
+- [x] Mettre à jour les mentions légales
 - [x] Retrait du formulaire de contact
 - [x] Conserver la redirection pour le lien Centre atlantique
 - [x] Remplacer la recherche par mots clé des actualités par un champ recherche spécifique
 - [x] Remplacement du contenu de la page `annuaire-des-adhérents` par une carte interactive
 - [x] Remplacer Facebook par LinkedIn
 - [x] Supprimer les liens Dailymotion
-- [ ] Ajout DPO pour la protection des données personnelles
-- [ ] Ajout de la personne en charge de la publication
-- [ ] Ajout des mentions légales de la Fédération du Négoce Agricole
+- [x] Ajout DPO pour la protection des données personnelles
+- [x] Ajout de la personne en charge de la publication
+- [x] Ajout des mentions légales de la Fédération du Négoce Agricole
 - [x] Conserver les actualités sur la page d'accueil
 - [x] Conserver lea page `actualites` et les actualités
+- [ ] Migration définitive du site vers un hébergement statique
 
 ## Hébergement
 L'hébergement du site dans son format statique est assuré par GitHub Pages.
