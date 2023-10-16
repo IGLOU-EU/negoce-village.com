@@ -16,8 +16,8 @@ Afin de se débarrasser de la technologie Microsoft SharePoint et son hébergeme
 - [x] Conserver les actualités sur la page d'accueil
 - [x] Conserver lea page `actualites` et les actualités
 - [x] Migration définitive du site vers un hébergement statique
-- [ ] Supprimer le pointage `negoce-village.iglou.eu`
-- [ ] Ajouter la redirection `negoce-village.com` vers `www.negoce-village.com`
+- [x] Supprimer le pointage `negoce-village.iglou.eu`
+- [x] Ajouter la redirection `negoce-village.com` vers `www.negoce-village.com`
 
 ## Hébergement
 L'hébergement du site dans son format statique est assuré par GitHub Pages.
