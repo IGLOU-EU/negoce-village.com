@@ -6615,8 +6615,8 @@ font-size:1em;
 .ms-core-listMenu-horizontalBox
 {
 /* [ReplaceColor(themeColor:"Navigation")] */ color:#666666;
-display:inline-block;
-vertical-align:middle;
+/* display:inline-block;
+vertical-align:middle; */
 }
 .ms-core-header .ms-core-listMenu-horizontalBox
 {

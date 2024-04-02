@@ -71,7 +71,7 @@ ul.my-breadcrumb li {
     min-width: 400px;
     min-height: 400px;
 }
-/*barre supérieur contennant suiteBarLeft[SharePoint Yammer OneDrive Sites] Le menu suiteBarRight[Sharepoint]*/
+/*barre supï¿½rieur contennant suiteBarLeft[SharePoint Yammer OneDrive Sites] Le menu suiteBarRight[Sharepoint]*/
 #suiteBarLeft 
 {
     display: table-row;
@@ -81,7 +81,7 @@ ul.my-breadcrumb li {
     display: table-cell;
     line-height: 0;
 }
-/*barre supérieur contennant PARCOURIR, PAGE , PARTAGER etc*/
+/*barre supï¿½rieur contennant PARCOURIR, PAGE , PARTAGER etc*/
 #s4-ribbonrow
 {
     height: 35px;
@@ -103,16 +103,16 @@ submenu multi
 /**TOPNAVIGATION */
 #DeltaTopNavigation
 {
-    display: inline; 
+    /* display: inline; 
     position:absolute;
     float:left;
+    width: 100%; */
     background-color: #3f9c35!important;
-    width: 100%;
 }
 #DeltaTopNavigation ul.root.ms-core-listMenu-root.static > li.static span 
 {
     /*white-space: nowrap;*/
-    margin-right:5px;
+    /* margin-right:5px; */
     text-decoration: none;
     font-weight:300;
     color:white;
@@ -142,7 +142,7 @@ submenu multi
     display: inline; 
 }
 #mainNav ul li a {
-    padding: 15px 0px;
+    padding: 15px 10px !important;
 }
 /** boite de recherche */
 #mainSearch
@@ -322,7 +322,7 @@ a.button:visited {
     {
         display: none;
     }
-    /* supprime la derniere colonne comportant les éléments communs */
+    /* supprime la derniere colonne comportant les ï¿½lï¿½ments communs */
     .span.span4.last
     {
         display: none;
@@ -335,7 +335,7 @@ a.button:visited {
     {         
         margin: 0; 
         float: none;
-        margin-top:0px; /*on supprime le Décalage vers le haut du contenu, par-dessus le slider*/ 
+        margin-top:0px; /*on supprime le Dï¿½calage vers le haut du contenu, par-dessus le slider*/ 
     }
     .print {
         margin-top:-40px;
@@ -395,7 +395,7 @@ div.content {
 }
 
 
-/* Style PAge Annuaire adhérents*/
+/* Style PAge Annuaire adhï¿½rents*/
 .negoce .content,.annuaire .content {
 margin-top: 0px;
 }

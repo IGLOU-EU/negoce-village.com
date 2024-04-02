@@ -882,7 +882,9 @@ hr {
         margin: 0;
         padding: 0;
         /* display: table;*/
-        float: left;
+        /* float: left; */
+        display: flex;
+        justify-content: space-between;
     }
 
         #mainNav ul li {
@@ -932,8 +934,14 @@ ul.submenu > li {
     padding: 10px 0px !important;
 }
 
+    ul.submenu > li > a > span > span {
+        font-size: 0.9rem !important;
+        line-height: 1rem !important;
+        color: #262626 !important;
+    }
+
     ul.submenu > li > a:hover > span > span {
-        color: white !important;
+        /* color: white !important; */
     }
 
 ul.submenu {
@@ -953,8 +961,9 @@ ul.submenu {
         font-size: 13px;
         margin: 0;
         padding: 0;
-        width: 180px;
+        /* width: 180px; */
         background: transparent;
+        padding: 0 5px !important;
     }
 
         #mainNav.type1 ul li ul.submenu li a:hover {
@@ -1168,7 +1177,7 @@ ul.submenu {
 
     #footer .span {
         width: 155px;
-        height: 300px;
+        /* height: 300px; */
         padding: 0 5px 0 13px;
         margin: 0;
         border-right: 1px dotted #999;
